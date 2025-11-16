@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voter Search</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    h1 { text-align: center; }
+    #searchBox { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
+    .result { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Voter Search</h1>
+  <input id="searchBox" type="text" placeholder="Search by name, house no, booth, etc..." />
+  <div id="results"></div>
+
+  <script>
+    let voters = [];
+
+    // Load voters JSON (upload voters.json to same folder as this HTML)
+    fetch('voters.json')
+      .then(res => res.json())
+      .then(data => { voters = data; displayResults(voters); });
+
+    document.getElementById('searchBox').addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      if (!q) return displayResults(voters);
+
+      const filtered = voters.filter(v => {
+        return Object.values(v).some(val => String(val).toLowerCase().includes(q));
+      });
+      displayResults(filtered);
+    });
+
+    function displayResults(list) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      list.forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <div><span class='label'>Name:</span> ${v.Name || v['Voter Name'] || ''}</div>
+          <div><span class='label'>Father/Husband:</span> ${v['Father Name'] || v['Husband Name'] || ''}</div>
+          <div><span class='label'>House No:</span> ${v['House No'] || ''}</div>
+          <div><span class='label'>Booth:</span> ${v['Booth'] || ''}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
