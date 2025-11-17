@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
+    let searchTimeout = null;
+    function debouncedSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(searchVoter, 400);  // Wait 0.4 second
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>मतदार शोध – दहाणू विभाग १३</title>
@@ -57,7 +61,7 @@
 
 <h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
 
-<input type="text" id="searchBox" placeholder="नाव / Name / Voter ID टाईप करा" onkeyup="searchVoter()">
+<input type="text" id="searchBox" placeholder="नाव / Name / Voter ID टाईप करा…" onkeyup="debouncedSearch()">    
 
 <div class="filters">
 
