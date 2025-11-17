@@ -1,46 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voter Search – Dahanu Ward 13</title>
+    <title>मतदार शोध – दहाणू विभाग १३</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f5f5f5;
+            background: #f2f2f2;
+            padding: 20px;
         }
-        input {
+        h2 {
+            margin-top: 0;
+        }
+        input, select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
             width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 5px;
-            border: 1px solid #333;
-            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #666;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-box {
+            flex: 1;
+            min-width: 150px;
         }
         .card {
-            background: #fff;
+            background: white;
             padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin: 12px 0;
+            border-left: 5px solid #2d8cff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
         .label {
             font-weight: bold;
+        }
+        button {
+            padding: 8px 12px;
+            background: #0078ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
-<h2>🔍 Voter Search – Dahanu Ward 13</h2>
-<p>Search by Marathi Name, English Name OR Voter ID</p>
+<h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
 
-<input 
-    type="text" 
-    id="searchBox" 
-    placeholder="Type to search…" 
-    onkeyup="searchVoter()"
-/>
+<input type="text" id="searchBox" placeholder="नाव / Name / Voter ID टाईप करा" onkeyup="searchVoter()">
+
+<div class="filters">
+
+    <div class="filter-box">
+        <label>लिंग (Gender)</label>
+        <select id="genderFilter" onchange="searchVoter()">
+            <option value="">सर्व</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select>
+    </div>
+
+    <div class="filter-box">
+        <label>प्रभाग / Booth</label>
+        <select id="boothFilter" onchange="searchVoter()">
+            <option value="">सर्व</option>
+        </select>
+    </div>
+
+    <div class="filter-box">
+        <label>किमान वय (Min Age)</label>
+        <input type="number" id="minAge" onkeyup="searchVoter()">
+    </div>
+
+    <div class="filter-box">
+        <label>कमाल वय (Max Age)</label>
+        <input type="number" id="maxAge" onkeyup="searchVoter()">
+    </div>
+
+</div>
 
 <div id="results"></div>
 
@@ -52,44 +99,100 @@ fetch("voters.json")
     .then(res => res.json())
     .then(data => {
         voters = data;
-    })
-    .catch(err => {
-        console.error("JSON Load Error:", err);
+        loadBoothFilter();
     });
+
+// Fill Booth Filter dropdown
+function loadBoothFilter() {
+    const booths = [...new Set(voters.map(v => v.Prabhag_No))];
+    const boothSelect = document.getElementById("boothFilter");
+    booths.forEach(b => {
+        if (b && b.trim() !== "") {
+            boothSelect.innerHTML += `<option value="${b.trim()}">${b.trim()}</option>`;
+        }
+    });
+}
 
 function searchVoter() {
     const q = document.getElementById("searchBox").value.toLowerCase().trim();
+    const gender = document.getElementById("genderFilter").value;
+    const booth = document.getElementById("boothFilter").value;
+    const minAge = document.getElementById("minAge").value;
+    const maxAge = document.getElementById("maxAge").value;
+
     const resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
 
-    if (q.length < 1) return;
+    let filtered = voters;
 
-    const filtered = voters.filter(v =>
-        (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(q)) ||
-        (v.Name_English && v.Name_English.toLowerCase().includes(q)) ||
-        (v.Voter_Id && v.Voter_Id.toLowerCase().includes(q))
-    );
+    // Search text
+    if (q) {
+        filtered = filtered.filter(v =>
+            (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(q)) ||
+            (v.Name_English && v.Name_English.toLowerCase().includes(q)) ||
+            (v.Voter_Id && v.Voter_Id.toLowerCase().includes(q)) ||
+            (String(v.SrNo).toLowerCase().includes(q))
+        );
+    }
+
+    // Gender Filter
+    if (gender) {
+        filtered = filtered.filter(v => v.Gender === gender);
+    }
+
+    // Booth Filter
+    if (booth) {
+        filtered = filtered.filter(v => (v.Prabhag_No || "").trim() === booth.trim());
+    }
+
+    // Age Filter
+    filtered = filtered.filter(v => {
+        const age = parseInt(v.Age) || 0;
+        if (minAge && age < minAge) return false;
+        if (maxAge && age > maxAge) return false;
+        return true;
+    });
 
     if (filtered.length === 0) {
-        resultsDiv.innerHTML = "<p>No voter found.</p>";
+        resultsDiv.innerHTML = "<p>❌ कोणतीही नोंद सापडली नाही</p>";
         return;
     }
 
     filtered.forEach(v => {
-        const html = `
+        resultsDiv.innerHTML += `
             <div class="card">
-                <div><span class="label">Name (Marathi):</span> ${v.Name_Marathi || ""}</div>
-                <div><span class="label">Name (English):</span> ${v.Name_English || ""}</div>
-                <div><span class="label">Gender:</span> ${v.Gender || ""}</div>
-                <div><span class="label">Age:</span> ${v.Age || ""}</div>
-                <div><span class="label">Voter ID:</span> ${v.Voter_Id || ""}</div>
-                <div><span class="label">Address (Marathi):</span> ${v.Aderes_Marathi || ""}</div>
-                <div><span class="label">Address (English):</span> ${v.Adres_English || ""}</div>
-                <div><span class="label">Prabhag No:</span> ${v.Prabhag_No || ""}</div>
+                <div><span class="label">Sr.No:</span> ${v.SrNo}</div>
+                <div><span class="label">नाव (मराठी):</span> ${v.Name_Marathi}</div>
+                <div><span class="label">Name (English):</span> ${v.Name_English}</div>
+                <div><span class="label">Voter ID:</span> ${v.Voter_Id}</div>
+                <div><span class="label">लिंग / Gender:</span> ${v.Gender}</div>
+                <div><span class="label">वय / Age:</span> ${v.Age}</div>
+                <div><span class="label">पत्ता (Marathi):</span> ${v.Aderes_Marathi}</div>
+                <div><span class="label">Address (English):</span> ${v.Adres_English}</div>
+                <div><span class="label">प्रभाग क्रमांक:</span> ${v.Prabhag_No}</div>
+                <button onclick='printSlip(${JSON.stringify(v)})'>🖨 प्रिंट मतदार स्लिप</button>
             </div>
         `;
-        resultsDiv.innerHTML += html;
     });
+}
+
+// PRINT SLIP
+function printSlip(voter) {
+    const w = window.open("", "PrintWindow");
+    w.document.write(`
+        <h3>मतदार स्लिप (Voter Slip)</h3>
+        <p><b>Sr.No:</b> ${voter.SrNo}</p>
+        <p><b>Name (Marathi):</b> ${voter.Name_Marathi}</p>
+        <p><b>Name (English):</b> ${voter.Name_English}</p>
+        <p><b>Voter ID:</b> ${voter.Voter_Id}</p>
+        <p><b>Age:</b> ${voter.Age}</p>
+        <p><b>Gender:</b> ${voter.Gender}</p>
+        <p><b>Address:</b> ${voter.Aderes_Marathi}</p>
+        <p><b>Booth / Prabhag:</b> ${voter.Prabhag_No}</p>
+        <hr>
+        <p>Printed from Voter Search – Dahanu Ward 13</p>
+    `);
+    w.print();
 }
 </script>
 
