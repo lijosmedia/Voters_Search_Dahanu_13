@@ -1,56 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Voter Search</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-    h1 { text-align: center; }
-    #searchBox { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
-    .result { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .label { font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Search – Dahanu Ward 13</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            width: 95%;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .result-card {
+            border: 1px solid #aaa;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <h1>Voter Search</h1>
-  <input id="searchBox" type="text" placeholder="Search by name, house no, booth, etc..." />
-  <div id="results"></div>
 
-  <script>
-    let voters = [];
+<h2>🔍 Voter Search – Dahanu Ward 13</h2>
+<p>Search by Name (Marathi/English) OR Voter ID</p>
 
-    // Load voters JSON (upload voters.json to same folder as this HTML)
-    fetch('voters.json')
-      .then(res => res.json())
-      .then(data => { voters = data; displayResults(voters); });
+<input type="text" id="searchBox" placeholder="Enter name or voter ID…" onkeyup="searchVoter()">
 
-    document.getElementById('searchBox').addEventListener('input', function() {
-      const q = this.value.toLowerCase();
-      if (!q) return displayResults(voters);
+<div id="results"></div>
 
-      const filtered = voters.filter(v => {
-        return Object.values(v).some(val => String(val).toLowerCase().includes(q));
-      });
-      displayResults(filtered);
+<script>
+let voters = [];
+
+fetch("voters.json")
+    .then(response => response.json())
+    .then(data => {
+        voters = data;
     });
 
-    function displayResults(list) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
+function searchVoter() {
+    const query = document.getElementById("searchBox").value.toLowerCase();
+    const results = document.getElementById("results");
+    results.innerHTML = "";
 
-      list.forEach(v => {
-        const div = document.createElement('div');
-        div.className = 'result';
-        div.innerHTML = `
-          <div><span class='label'>Name:</span> ${v.Name || v['Voter Name'] || ''}</div>
-          <div><span class='label'>Father/Husband:</span> ${v['Father Name'] || v['Husband Name'] || ''}</div>
-          <div><span class='label'>House No:</span> ${v['House No'] || ''}</div>
-          <div><span class='label'>Booth:</span> ${v['Booth'] || ''}</div>
-        `;
-        container.appendChild(div);
-      });
+    if (query.length < 2) return;
+
+    const filtered = voters.filter(v =>
+        (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(query)) ||
+        (v.Name_English && v.Name_English.toLowerCase().includes(query)) ||
+        (v.Voter_Id && v.Voter_Id.toLowerCase().includes(query))
+    );
+
+    if (filtered.length === 0) {
+        results.innerHTML = "<p>No results found.</p>";
+        return;
     }
-  </script>
-</body>
-</html>
+
+    filtered.forEach(v => {
+        results.innerHTML += `
+            <div class="result-card">
+                <div><span class="label">Name (Marathi):</span> ${v.Name_Marathi || ""}</div>
+                <div><span class="label">Name (English):</span> ${v.Name_English || ""}</div>
+                <div><span class="label">Gender:</span> ${v.Gender || ""}</div>
+                <div><span class="label">Age:</span> ${v.Age || ""}</div>
+                <div><span class="label">Voter ID:</span> ${v.Voter_Id || ""}</div>
+                <div><span class="label">Address (Marathi):</span> ${v.Aderes_Marathi || ""}</div>
+                <div><span class="label">Address (English):</span> ${v.Adres_English || ""}</div>
+                <div><span class="label">Prabhag No:</span> ${v.Prabhag_No || ""}</div>
+            </div>
