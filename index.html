@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>मतदार शोध – दहाणू प्रभाग १३</title>
 
-    <!-- Google Font -->
+    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #dfe9f3, #f4f7fa);
+            background: linear-gradient(135deg, #ffb566, #ff8c42);
             min-height: 100vh;
             padding: 0 15px 40px;
         }
@@ -21,73 +21,59 @@
         .header {
             text-align: center;
             padding: 25px 10px;
-            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            background: linear-gradient(135deg, #ff6a00, #ff8c00);
             color: white;
             border-radius: 0 0 25px 25px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .header h2 {
             margin: 0;
             font-weight: 600;
             font-size: 26px;
+            letter-spacing: 1px;
         }
 
-        /* Search Bar */
+        /* SEARCH BAR */
         .search-box {
             width: 100%;
             padding: 16px;
             margin-top: -25px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: none;
             font-size: 18px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        /* Filters */
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 18px;
-        }
-        select, input {
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #bbb;
-            width: 100%;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
+            background: #fff6ef;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
 
         /* GLASS CARD */
         .card {
-            background: rgba(255,255,255,0.45);
+            background: rgba(255, 255, 255, 0.55);
             backdrop-filter: blur(14px);
             margin: 15px 0;
             padding: 18px;
             border-radius: 18px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
             animation: fadeIn 0.4s;
-            border-left: 6px solid #0078ff;
+            border-left: 6px solid #ff6a00;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Card Content */
+        /* CARD TEXT */
         .title {
-            font-size: 22px;
+            font-size: 21px;
             font-weight: 600;
-            color: #003366;
+            color: #7b2e00;
             margin-bottom: 4px;
         }
 
         .voter-id {
-            background: #0078ff;
-            padding: 4px 10px;
+            background: #ff6a00;
+            padding: 5px 10px;
             border-radius: 20px;
             display: inline-block;
             color: white;
@@ -99,98 +85,51 @@
             display: flex;
             align-items: center;
             margin: 6px 0;
-            color: #333;
+            color: #4a2600;
             font-size: 15px;
         }
         .info-row span {
             margin-left: 10px;
         }
         .icon {
-            font-size: 18px;
+            font-size: 17px;
         }
 
-        /* Gender Badge */
-        .badge-M { background: #007bff; }
-        .badge-F { background: #e91e63; }
-
-        .gender-badge {
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-left: 8px;
-        }
-
-        /* Booth Tag */
-        .booth-tag {
-            background: #ff9800;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-left: 8px;
-        }
-
-        /* Buttons */
+        /* BUTTON */
         button {
             padding: 10px 16px;
             border: none;
-            background: #0078ff;
+            background: #e65100;
             border-radius: 10px;
             color: white;
             margin-top: 12px;
             cursor: pointer;
             font-size: 15px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #bf4600;
         }
 
         #loadMoreBtn {
             width: 100%;
-            background: #28a745;
+            background: #d35400;
             font-size: 18px;
             margin-top: 20px;
         }
+
     </style>
 </head>
 
 <body>
 
 <div class="header">
-    <h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
+    <h2>🟧 मतदार शोध – दहाणू प्रभाग १३</h2>
 </div>
 
 <input type="text" id="searchBox" class="search-box" placeholder="नाव / Name / Voter ID / SrNo टाईप करा…" onkeyup="debouncedSearch()">
 
-<div class="filters">
-
-    <div class="filter-box">
-        <label>लिंग</label>
-        <select id="genderFilter" onchange="debouncedSearch()">
-            <option value="">सर्व</option>
-            <option value="M">पुरुष</option>
-            <option value="F">स्त्री</option>
-        </select>
-    </div>
-
-    <div class="filter-box">
-        <label>प्रभाग</label>
-        <select id="boothFilter" onchange="debouncedSearch()">
-            <option value="">सर्व</option>
-        </select>
-    </div>
-
-    <div class="filter-box">
-        <label>किमान वय</label>
-        <input type="number" id="minAge" onkeyup="debouncedSearch()">
-    </div>
-
-    <div class="filter-box">
-        <label>कमाल वय</label>
-        <input type="number" id="maxAge" onkeyup="debouncedSearch()">
-    </div>
-</div>
-
 <div id="results"></div>
-
 <button id="loadMoreBtn" style="display:none;" onclick="loadMore()">🔽 आणखी दाखवा</button>
 
 <script>
@@ -206,33 +145,15 @@ fetch("voters.json")
             ...v,
             Age: parseInt(v.Age) || 0
         }));
-        loadBoothFilter();
     });
-
-// Dropdown Booth
-function loadBoothFilter() {
-    const booths = [...new Set(voters.map(v => v.Prabhag_No))];
-    const boothSelect = document.getElementById("boothFilter");
-
-    booths.forEach(b => {
-        if (b && b.trim() !== "") {
-            boothSelect.innerHTML += `<option value="${b.trim()}">${b.trim()}</option>`;
-        }
-    });
-}
 
 function debouncedSearch() {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(searchVoter, 350);
 }
 
-// Search Logic
 function searchVoter() {
     const q = document.getElementById("searchBox").value.toLowerCase().trim();
-    const gender = document.getElementById("genderFilter").value;
-    const booth = document.getElementById("boothFilter").value;
-    const minAge = document.getElementById("minAge").value;
-    const maxAge = document.getElementById("maxAge").value;
 
     let results = voters;
 
@@ -244,15 +165,6 @@ function searchVoter() {
             (String(v.SrNo).toLowerCase().includes(q))
         );
     }
-
-    if (gender) results = results.filter(v => v.Gender === gender);
-    if (booth) results = results.filter(v => (v.Prabhag_No || "").trim() === booth.trim());
-
-    results = results.filter(v => {
-        if (minAge && v.Age < minAge) return false;
-        if (maxAge && v.Age > maxAge) return false;
-        return true;
-    });
 
     filteredResults = results;
     displayCount = 50;
@@ -274,20 +186,9 @@ function displayResults() {
                 <div class="info-row"><span class="icon">🆔</span> <span>Sr.No: ${v.SrNo}</span></div>
                 <div class="info-row"><span class="icon">👤</span> <span>${v.Name_English}</span></div>
                 <div class="info-row"><span class="icon">🎂</span> <span>वय: ${v.Age}</span></div>
-
-                <div class="info-row">
-                    <span class="icon">⚧️</span>
-                    <span>${v.Gender}</span>
-                    <span class="gender-badge badge-${v.Gender}">${v.Gender === 'M' ? 'पुरुष' : 'स्त्री'}</span>
-                </div>
-
+                <div class="info-row"><span class="icon">⚧️</span> <span>${v.Gender}</span></div>
                 <div class="info-row"><span class="icon">📍</span> <span>${v.Aderes_Marathi}</span></div>
-
-                <div class="info-row">
-                    <span class="icon">🏢</span> 
-                    <span>प्रभाग: ${v.Prabhag_No}</span>
-                    <span class="booth-tag">${v.Prabhag_No}</span>
-                </div>
+                <div class="info-row"><span class="icon">🏢</span> <span>${v.Prabhag_No}</span></div>
 
                 <button onclick='printSlip(${JSON.stringify(v)})'>🖨 प्रिंट स्लिप</button>
             </div>
@@ -303,7 +204,6 @@ function loadMore() {
     displayResults();
 }
 
-// Print Slip
 function printSlip(v) {
     const w = window.open("", "PrintWindow");
     w.document.write(`
