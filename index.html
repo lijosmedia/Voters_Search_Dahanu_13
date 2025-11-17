@@ -8,17 +8,22 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background: #f5f5f5;
         }
         input {
-            width: 95%;
-            padding: 10px;
-            font-size: 18px;
-        }
-        .result-card {
-            border: 1px solid #aaa;
+            width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            font-size: 18px;
             border-radius: 5px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         .label {
             font-weight: bold;
@@ -28,42 +33,51 @@
 <body>
 
 <h2>🔍 Voter Search – Dahanu Ward 13</h2>
-<p>Search by Name (Marathi/English) OR Voter ID</p>
+<p>Search by Marathi Name, English Name OR Voter ID</p>
 
-<input type="text" id="searchBox" placeholder="Enter name or voter ID…" onkeyup="searchVoter()">
+<input 
+    type="text" 
+    id="searchBox" 
+    placeholder="Type to search…" 
+    onkeyup="searchVoter()"
+/>
 
 <div id="results"></div>
 
 <script>
 let voters = [];
 
+// Load JSON
 fetch("voters.json")
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
         voters = data;
+    })
+    .catch(err => {
+        console.error("JSON Load Error:", err);
     });
 
 function searchVoter() {
-    const query = document.getElementById("searchBox").value.toLowerCase();
-    const results = document.getElementById("results");
-    results.innerHTML = "";
+    const q = document.getElementById("searchBox").value.toLowerCase().trim();
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
 
-    if (query.length < 2) return;
+    if (q.length < 1) return;
 
     const filtered = voters.filter(v =>
-        (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(query)) ||
-        (v.Name_English && v.Name_English.toLowerCase().includes(query)) ||
-        (v.Voter_Id && v.Voter_Id.toLowerCase().includes(query))
+        (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(q)) ||
+        (v.Name_English && v.Name_English.toLowerCase().includes(q)) ||
+        (v.Voter_Id && v.Voter_Id.toLowerCase().includes(q))
     );
 
     if (filtered.length === 0) {
-        results.innerHTML = "<p>No results found.</p>";
+        resultsDiv.innerHTML = "<p>No voter found.</p>";
         return;
     }
 
     filtered.forEach(v => {
-        results.innerHTML += `
-            <div class="result-card">
+        const html = `
+            <div class="card">
                 <div><span class="label">Name (Marathi):</span> ${v.Name_Marathi || ""}</div>
                 <div><span class="label">Name (English):</span> ${v.Name_English || ""}</div>
                 <div><span class="label">Gender:</span> ${v.Gender || ""}</div>
@@ -73,3 +87,11 @@ function searchVoter() {
                 <div><span class="label">Address (English):</span> ${v.Adres_English || ""}</div>
                 <div><span class="label">Prabhag No:</span> ${v.Prabhag_No || ""}</div>
             </div>
+        `;
+        resultsDiv.innerHTML += html;
+    });
+}
+</script>
+
+</body>
+</html>
