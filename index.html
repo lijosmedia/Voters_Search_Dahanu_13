@@ -10,67 +10,88 @@
 
     <style>
         body {
+            margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: #eef2f3;
-            padding: 20px;
+            background: linear-gradient(135deg, #dfe9f3, #f4f7fa);
+            min-height: 100vh;
+            padding: 0 15px 40px;
         }
 
-        h2 {
+        /* HEADER */
+        .header {
             text-align: center;
+            padding: 25px 10px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: white;
+            border-radius: 0 0 25px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .header h2 {
+            margin: 0;
             font-weight: 600;
-            margin-bottom: 5px;
+            font-size: 26px;
         }
 
+        /* Search Bar */
         .search-box {
             width: 100%;
-            padding: 14px;
-            font-size: 17px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            border: 1px solid #888;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            padding: 16px;
+            margin-top: -25px;
+            border-radius: 12px;
+            border: none;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
+        /* Filters */
         .filters {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 15px;
+            margin-top: 18px;
         }
-
-        .filter-box {
-            flex: 1;
-            min-width: 160px;
-        }
-
-        .filter-box input, .filter-box select {
-            padding: 10px;
+        select, input {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #bbb;
             width: 100%;
-            border-radius: 8px;
-            border: 1px solid #aaa;
-            background: white;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
         }
 
+        /* GLASS CARD */
         .card {
-            background: white;
-            padding: 18px;
-            border-radius: 15px;
+            background: rgba(255,255,255,0.45);
+            backdrop-filter: blur(14px);
             margin: 15px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            animation: fadeIn 0.4s;
             border-left: 6px solid #0078ff;
-            animation: fadeIn 0.3s ease-in-out;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Content */
         .title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
-            color: #222;
-            margin-bottom: 5px;
+            color: #003366;
+            margin-bottom: 4px;
         }
 
-        .subtitle {
-            font-size: 15px;
-            color: #555;
+        .voter-id {
+            background: #0078ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            color: white;
+            font-size: 14px;
             margin-bottom: 12px;
         }
 
@@ -78,49 +99,69 @@
             display: flex;
             align-items: center;
             margin: 6px 0;
-            color: #444;
+            color: #333;
+            font-size: 15px;
         }
-
         .info-row span {
-            margin-left: 8px;
+            margin-left: 10px;
         }
-
         .icon {
             font-size: 18px;
         }
 
-        button {
-            padding: 10px 12px;
-            background: #0078ff;
+        /* Gender Badge */
+        .badge-M { background: #007bff; }
+        .badge-F { background: #e91e63; }
+
+        .gender-badge {
             color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        /* Booth Tag */
+        .booth-tag {
+            background: #ff9800;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 16px;
             border: none;
-            border-radius: 8px;
+            background: #0078ff;
+            border-radius: 10px;
+            color: white;
+            margin-top: 12px;
             cursor: pointer;
-            margin-top: 10px;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         #loadMoreBtn {
             width: 100%;
             background: #28a745;
             font-size: 18px;
-            padding: 14px;
-        }
-
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(8px);}
-            to {opacity: 1; transform: translateY(0);}
+            margin-top: 20px;
         }
     </style>
 </head>
 
 <body>
 
-<h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
+<div class="header">
+    <h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
+</div>
 
-<input type="text" id="searchBox" class="search-box" placeholder="नाव / Name / Voter ID टाईप करा…" onkeyup="debouncedSearch()">
+<input type="text" id="searchBox" class="search-box" placeholder="नाव / Name / Voter ID / SrNo टाईप करा…" onkeyup="debouncedSearch()">
 
 <div class="filters">
+
     <div class="filter-box">
         <label>लिंग</label>
         <select id="genderFilter" onchange="debouncedSearch()">
@@ -149,6 +190,7 @@
 </div>
 
 <div id="results"></div>
+
 <button id="loadMoreBtn" style="display:none;" onclick="loadMore()">🔽 आणखी दाखवा</button>
 
 <script>
@@ -167,6 +209,7 @@ fetch("voters.json")
         loadBoothFilter();
     });
 
+// Dropdown Booth
 function loadBoothFilter() {
     const booths = [...new Set(voters.map(v => v.Prabhag_No))];
     const boothSelect = document.getElementById("boothFilter");
@@ -180,9 +223,10 @@ function loadBoothFilter() {
 
 function debouncedSearch() {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(searchVoter, 300);
+    searchTimeout = setTimeout(searchVoter, 350);
 }
 
+// Search Logic
 function searchVoter() {
     const q = document.getElementById("searchBox").value.toLowerCase().trim();
     const gender = document.getElementById("genderFilter").value;
@@ -225,14 +269,25 @@ function displayResults() {
         resultsDiv.innerHTML += `
             <div class="card">
                 <div class="title">${v.Name_Marathi}</div>
-                <div class="subtitle">Voter ID: <b>${v.Voter_Id}</b></div>
+                <div class="voter-id">Voter ID: ${v.Voter_Id}</div>
 
                 <div class="info-row"><span class="icon">🆔</span> <span>Sr.No: ${v.SrNo}</span></div>
                 <div class="info-row"><span class="icon">👤</span> <span>${v.Name_English}</span></div>
                 <div class="info-row"><span class="icon">🎂</span> <span>वय: ${v.Age}</span></div>
-                <div class="info-row"><span class="icon">⚧️</span> <span>${v.Gender}</span></div>
+
+                <div class="info-row">
+                    <span class="icon">⚧️</span>
+                    <span>${v.Gender}</span>
+                    <span class="gender-badge badge-${v.Gender}">${v.Gender === 'M' ? 'पुरुष' : 'स्त्री'}</span>
+                </div>
+
                 <div class="info-row"><span class="icon">📍</span> <span>${v.Aderes_Marathi}</span></div>
-                <div class="info-row"><span class="icon">🏢</span> <span>प्रभाग: ${v.Prabhag_No}</span></div>
+
+                <div class="info-row">
+                    <span class="icon">🏢</span> 
+                    <span>प्रभाग: ${v.Prabhag_No}</span>
+                    <span class="booth-tag">${v.Prabhag_No}</span>
+                </div>
 
                 <button onclick='printSlip(${JSON.stringify(v)})'>🖨 प्रिंट स्लिप</button>
             </div>
@@ -248,6 +303,7 @@ function loadMore() {
     displayResults();
 }
 
+// Print Slip
 function printSlip(v) {
     const w = window.open("", "PrintWindow");
     w.document.write(`
@@ -256,8 +312,8 @@ function printSlip(v) {
         <p><b>Voter ID:</b> ${v.Voter_Id}</p>
         <p><b>Age:</b> ${v.Age}</p>
         <p><b>Gender:</b> ${v.Gender}</p>
+        <p><b>प्रभाग:</b> ${v.Prabhag_No}</p>
         <p><b>Address:</b> ${v.Aderes_Marathi}</p>
-        <p><b>Prabhag:</b> ${v.Prabhag_No}</p>
         <hr>
     `);
     w.print();
