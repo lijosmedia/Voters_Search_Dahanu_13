@@ -5,67 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>मतदार शोध – दहाणू प्रभाग १३</title>
 
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
+            font-family: 'Poppins', sans-serif;
+            background: #eef2f3;
             padding: 20px;
         }
-        input, select {
-            padding: 10px;
-            font-size: 16px;
-            width: 100%;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            border: 1px solid #666;
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
+
+        .search-box {
+            width: 100%;
+            padding: 14px;
+            font-size: 17px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #888;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
         .filters {
             display: flex;
-            gap: 10px;
             flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
         }
+
         .filter-box {
             flex: 1;
-            min-width: 140px;
+            min-width: 160px;
         }
+
+        .filter-box input, .filter-box select {
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+            background: white;
+        }
+
         .card {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 12px 0;
-            border-left: 5px solid #2d8cff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            padding: 18px;
+            border-radius: 15px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-left: 6px solid #0078ff;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .label {
-            font-weight: bold;
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 5px;
         }
+
+        .subtitle {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            color: #444;
+        }
+
+        .info-row span {
+            margin-left: 8px;
+        }
+
+        .icon {
+            font-size: 18px;
+        }
+
         button {
-            padding: 8px 12px;
+            padding: 10px 12px;
             background: #0078ff;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 10px;
+            font-size: 14px;
         }
+
         #loadMoreBtn {
-            background: #28a745;
             width: 100%;
-            padding: 12px;
-            margin-top: 15px;
+            background: #28a745;
             font-size: 18px;
+            padding: 14px;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(8px);}
+            to {opacity: 1; transform: translateY(0);}
         }
     </style>
 </head>
+
 <body>
 
 <h2>🔍 मतदार शोध – दहाणू प्रभाग १३</h2>
-<p>नाव / Name / Voter ID / क्रमांक वापरुन शोधा</p>
 
-<input type="text" id="searchBox" placeholder="टाइप करा…" onkeyup="debouncedSearch()">
+<input type="text" id="searchBox" class="search-box" placeholder="नाव / Name / Voter ID टाईप करा…" onkeyup="debouncedSearch()">
 
 <div class="filters">
-
     <div class="filter-box">
         <label>लिंग</label>
         <select id="genderFilter" onchange="debouncedSearch()">
@@ -91,7 +146,6 @@
         <label>कमाल वय</label>
         <input type="number" id="maxAge" onkeyup="debouncedSearch()">
     </div>
-
 </div>
 
 <div id="results"></div>
@@ -103,7 +157,6 @@ let filteredResults = [];
 let displayCount = 50;
 let searchTimeout = null;
 
-// Load JSON file
 fetch("voters.json")
     .then(res => res.json())
     .then(data => {
@@ -114,7 +167,6 @@ fetch("voters.json")
         loadBoothFilter();
     });
 
-// Fill Booth dropdown from JSON
 function loadBoothFilter() {
     const booths = [...new Set(voters.map(v => v.Prabhag_No))];
     const boothSelect = document.getElementById("boothFilter");
@@ -126,13 +178,11 @@ function loadBoothFilter() {
     });
 }
 
-// Debounce function for speed
 function debouncedSearch() {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(searchVoter, 400);
+    searchTimeout = setTimeout(searchVoter, 300);
 }
 
-// Main search function
 function searchVoter() {
     const q = document.getElementById("searchBox").value.toLowerCase().trim();
     const gender = document.getElementById("genderFilter").value;
@@ -142,7 +192,6 @@ function searchVoter() {
 
     let results = voters;
 
-    // Text Search
     if (q) {
         results = results.filter(v =>
             (v.Name_Marathi && v.Name_Marathi.toLowerCase().includes(q)) ||
@@ -152,13 +201,9 @@ function searchVoter() {
         );
     }
 
-    // Gender Filter
     if (gender) results = results.filter(v => v.Gender === gender);
-
-    // Booth Filter
     if (booth) results = results.filter(v => (v.Prabhag_No || "").trim() === booth.trim());
 
-    // Age Filter
     results = results.filter(v => {
         if (minAge && v.Age < minAge) return false;
         if (maxAge && v.Age > maxAge) return false;
@@ -170,7 +215,6 @@ function searchVoter() {
     displayResults();
 }
 
-// Display results (first 50 only)
 function displayResults() {
     const resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
@@ -180,45 +224,41 @@ function displayResults() {
     toDisplay.forEach(v => {
         resultsDiv.innerHTML += `
             <div class="card">
-                <div><span class="label">Sr.No:</span> ${v.SrNo}</div>
-                <div><span class="label">नाव (मराठी):</span> ${v.Name_Marathi}</div>
-                <div><span class="label">Name:</span> ${v.Name_English}</div>
-                <div><span class="label">Voter ID:</span> ${v.Voter_Id}</div>
-                <div><span class="label">Age:</span> ${v.Age}</div>
-                <div><span class="label">Gender:</span> ${v.Gender}</div>
-                <div><span class="label">पत्ता:</span> ${v.Aderes_Marathi}</div>
-                <div><span class="label">Prabhag:</span> ${v.Prabhag_No}</div>
+                <div class="title">${v.Name_Marathi}</div>
+                <div class="subtitle">Voter ID: <b>${v.Voter_Id}</b></div>
+
+                <div class="info-row"><span class="icon">🆔</span> <span>Sr.No: ${v.SrNo}</span></div>
+                <div class="info-row"><span class="icon">👤</span> <span>${v.Name_English}</span></div>
+                <div class="info-row"><span class="icon">🎂</span> <span>वय: ${v.Age}</span></div>
+                <div class="info-row"><span class="icon">⚧️</span> <span>${v.Gender}</span></div>
+                <div class="info-row"><span class="icon">📍</span> <span>${v.Aderes_Marathi}</span></div>
+                <div class="info-row"><span class="icon">🏢</span> <span>प्रभाग: ${v.Prabhag_No}</span></div>
+
                 <button onclick='printSlip(${JSON.stringify(v)})'>🖨 प्रिंट स्लिप</button>
             </div>
         `;
     });
 
-    // Show Load More button if needed
     document.getElementById("loadMoreBtn").style.display =
         (filteredResults.length > displayCount) ? "block" : "none";
 }
 
-// Load more results
 function loadMore() {
     displayCount += 50;
     displayResults();
 }
 
-// Print Voter Slip
 function printSlip(v) {
     const w = window.open("", "PrintWindow");
     w.document.write(`
         <h3>मतदार स्लिप</h3>
-        <p><b>Sr.No:</b> ${v.SrNo}</p>
-        <p><b>Name (Marathi):</b> ${v.Name_Marathi}</p>
-        <p><b>Name (English):</b> ${v.Name_English}</p>
+        <p><b>नाव:</b> ${v.Name_Marathi}</p>
         <p><b>Voter ID:</b> ${v.Voter_Id}</p>
         <p><b>Age:</b> ${v.Age}</p>
         <p><b>Gender:</b> ${v.Gender}</p>
         <p><b>Address:</b> ${v.Aderes_Marathi}</p>
         <p><b>Prabhag:</b> ${v.Prabhag_No}</p>
         <hr>
-        <p>Voter Search – Dahanu Ward 13</p>
     `);
     w.print();
 }
